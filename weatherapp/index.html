@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyPulse – Live Weather</title>
+    <meta name="description"
+        content="Get real-time weather updates, hourly forecasts, and detailed atmospheric data for any city in the world.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Animated background blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="app-wrapper">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">SkyPulse</span>
+            </div>
+            <div class="current-datetime" id="currentDateTime"></div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="cityInput" placeholder="Search any city…" autocomplete="off">
+                    <button id="searchBtn" onclick="getWeather()">
+                        <span>Search</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>Fetching weather data…</p>
+        </div>
+
+        <!-- Error Banner -->
+        <div class="error-banner" id="errorBanner">
+            <span>⚠️</span>
+            <span id="errorMsg">City not found. Please try again.</span>
+        </div>
+
+        <!-- Main Weather Display -->
+        <main class="weather-dashboard" id="weatherDashboard">
+
+            <!-- Hero Card -->
+            <div class="hero-card" id="heroCard">
+                <div class="hero-left">
+                    <div class="city-info">
+                        <h1 class="city-name" id="cityName">—</h1>
+                        <p class="country" id="countryName">—</p>
+                    </div>
+                    <div class="main-temp">
+                        <span id="mainTemp">—</span>
+                        <sup>°C</sup>
+                    </div>
+                    <p class="weather-desc" id="weatherDesc">—</p>
+                    <div class="temp-range">
+                        <span>↑ <span id="tempMax">—</span></span>
+                        <span class="divider">|</span>
+                        <span>↓ <span id="tempMin">—</span></span>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <img id="weatherIcon" src="" alt="Weather Icon" class="weather-icon-img">
+                    <div class="last-updated" id="lastUpdated">—</div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+
+                <div class="stat-card" id="card-humidity">
+                    <div class="stat-icon">💧</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Humidity</span>
+                        <span class="stat-value" id="humidityVal">—</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" id="humidityBar"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card" id="card-wind">
+                    <div class="stat-icon">🌬️</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Wind Speed</span>
+                        <span class="stat-value" id="windVal">—</span>
+                    </div>
+                    <div class="stat-sub" id="windDir">—</div>
+                </div>
+
+                <div class="stat-card" id="card-feels">
+                    <div class="stat-icon">🌡️</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Feels Like</span>
+                        <span class="stat-value" id="feelsVal">—</span>
+                    </div>
+                    <div class="stat-sub" id="feelsDesc">—</div>
+                </div>
+
+                <div class="stat-card" id="card-pressure">
+                    <div class="stat-icon">🔵</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Pressure</span>
+                        <span class="stat-value" id="pressureVal">—</span>
+                    </div>
+                    <div class="stat-sub">hPa</div>
+                </div>
+
+                <div class="stat-card" id="card-visibility">
+                    <div class="stat-icon">👁️</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Visibility</span>
+                        <span class="stat-value" id="visibilityVal">—</span>
+                    </div>
+                    <div class="stat-sub">km</div>
+                </div>
+
+                <div class="stat-card" id="card-cloud">
+                    <div class="stat-icon">☁️</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Cloud Cover</span>
+                        <span class="stat-value" id="cloudVal">—</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill cloud-fill" id="cloudBar"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sun & Atmosphere Row -->
+            <div class="info-row">
+
+                <div class="sun-card">
+                    <h3 class="card-title">🌅 Sun Schedule</h3>
+                    <div class="sun-track">
+                        <div class="sun-point">
+                            <span class="sun-label">Sunrise</span>
+                            <span class="sun-time" id="sunriseTime">—</span>
+                        </div>
+                        <div class="sun-arc">
+                            <div class="arc-line">
+                                <div class="arc-sun" id="arcSun">☀️</div>
+                            </div>
+                        </div>
+                        <div class="sun-point">
+                            <span class="sun-label">Sunset</span>
+                            <span class="sun-time" id="sunsetTime">—</span>
+                        </div>
+                    </div>
+                    <div class="daylight-duration" id="daylightDuration">—</div>
+                </div>
+
+                <div class="atmo-card">
+                    <h3 class="card-title">🌐 Atmosphere</h3>
+                    <div class="atmo-grid">
+                        <div class="atmo-item">
+                            <span class="atmo-label">Dew Point</span>
+                            <span class="atmo-val" id="dewPoint">—</span>
+                        </div>
+                        <div class="atmo-item">
+                            <span class="atmo-label">Sea Level</span>
+                            <span class="atmo-val" id="seaLevel">—</span>
+                        </div>
+                        <div class="atmo-item">
+                            <span class="atmo-label">Ground Level</span>
+                            <span class="atmo-val" id="groundLevel">—</span>
+                        </div>
+                        <div class="atmo-item">
+                            <span class="atmo-label">Wind Gust</span>
+                            <span class="atmo-val" id="windGust">—</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 24-Hour Forecast (simulated from current data) -->
+            <div class="forecast-section">
+                <h3 class="card-title">🕐 24-Hour Forecast</h3>
+                <div class="forecast-scroll" id="forecastScroll">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Air Quality Indicator -->
+            <div class="air-quality-card">
+                <h3 class="card-title">💨 Weather Condition Index</h3>
+                <div class="aqi-bar-wrapper">
+                    <div class="aqi-labels">
+                        <span>Excellent</span><span>Good</span><span>Moderate</span><span>Poor</span><span>Hazardous</span>
+                    </div>
+                    <div class="aqi-track">
+                        <div class="aqi-fill" id="aqiFill"></div>
+                        <div class="aqi-pointer" id="aqiPointer"></div>
+                    </div>
+                </div>
+                <p class="aqi-desc" id="aqiDesc">—</p>
+            </div>
+
+        </main>
+
+        <footer class="app-footer">
+            <p>Powered by <a href="https://openweathermap.org" target="_blank">OpenWeatherMap</a> · SkyPulse © 2026</p>
+        </footer>
+
+    </div>
+
+    <script src="fetch.js"></script>
+</body>
+
+</html>
